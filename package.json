@@ -1,7 +1,19 @@
 {
-  "name": "react-example",
-  "private": true,
-  "version": "0.0.0",
+  "name": "national-state-simulator",
+  "version": "1.0.0",
+  "description": "Interactive, mathematically rigorous National Policy & Macroeconomic Simulation Laboratory with cross-sector dynamics",
+  "license": "Apache-2.0",
+  "keywords": [
+    "national-simulation",
+    "macroeconomics",
+    "policy-laboratory",
+    "accounting-invariants",
+    "cobb-douglas",
+    "react-19",
+    "typescript",
+    "bilingual",
+    "arabic-rtl"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
