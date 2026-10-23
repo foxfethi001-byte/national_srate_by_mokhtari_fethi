@@ -102,110 +102,224 @@ export const EconomicDashboard: React.FC<EconomicDashboardProps> = ({
     },
   ];
 
+  // Visual state indicator thresholds for simulated macroeconomic indicators
+  const growthRate = currentState.macro.realGdpGrowthRate;
+  const growthStatus: 'normal' | 'warning' | 'critical' =
+    growthRate >= 2.0 ? 'normal' : growthRate >= 0 ? 'warning' : 'critical';
+
+  const inflationRate = currentState.macro.inflationRate;
+  const inflationStatus: 'normal' | 'warning' | 'critical' =
+    inflationRate <= 4.0 ? 'normal' : inflationRate <= 7.0 ? 'warning' : 'critical';
+
+  const unemploymentRate = currentState.demographics.unemploymentRate;
+  const unemploymentStatus: 'normal' | 'warning' | 'critical' =
+    unemploymentRate <= 7.5 ? 'normal' : unemploymentRate <= 11.0 ? 'warning' : 'critical';
+
+  const productivityWage = econ.laborProductivity.averageRealWageMonthly;
+  const productivityStatus: 'normal' | 'warning' | 'critical' =
+    productivityWage >= 1200 ? 'normal' : productivityWage >= 900 ? 'warning' : 'critical';
+
+  const caBalance = econ.capacityTrade.currentAccountBalanceUsd;
+  const caStatus: 'normal' | 'warning' | 'critical' =
+    caBalance >= -1.5 ? 'normal' : caBalance >= -4.0 ? 'warning' : 'critical';
+
+  const outputGap = econ.nationalAccounts.outputGapPct;
+  const gapAbs = Math.abs(outputGap);
+  const gapStatus: 'normal' | 'warning' | 'critical' =
+    gapAbs <= 1.8 ? 'normal' : gapAbs <= 3.5 ? 'warning' : 'critical';
+
+  const renderStatusDot = (status: 'normal' | 'warning' | 'critical', tooltip: string) => (
+    <span className="relative flex h-2 w-2 flex-shrink-0" title={tooltip}>
+      {status === 'critical' ? (
+        <>
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.7)]"></span>
+        </>
+      ) : status === 'warning' ? (
+        <>
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-60"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]"></span>
+        </>
+      ) : (
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]"></span>
+      )}
+    </span>
+  );
+
   return (
     <div className="space-y-6">
-      {/* Top Macro Indicators Banner */}
+      {/* Top Macro Indicators Banner with Glassmorphism and Visual Threshold Indicators */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {/* Real GDP */}
         <div
           onClick={() => onInspectMetric('realGdp')}
-          className="bg-slate-900 border border-slate-800 rounded-lg p-3 hover:border-cyan-500/50 transition-colors cursor-pointer"
+          className="glass-card rounded-xl p-3.5 border border-slate-800/80 hover:border-cyan-500/40 hover:shadow-[0_4px_20px_rgba(6,182,212,0.12)] transition-all cursor-pointer group relative overflow-hidden"
         >
           <div className="flex items-center justify-between text-[11px] text-slate-400">
-            <span>الناتج الحقيقي</span>
+            <div className="flex items-center gap-1.5 min-w-0">
+              {renderStatusDot(
+                growthStatus,
+                growthStatus === 'critical'
+                  ? (lang === 'ar' ? 'انكماش اقتصادي تحت الصفر (حرج)' : 'Economic contraction below zero (Critical)')
+                  : growthStatus === 'warning'
+                  ? (lang === 'ar' ? 'نمو بطيء دون المعدل المستهدف' : 'Below target growth (Warning)')
+                  : (lang === 'ar' ? 'نمو ضمن النطاق المستهدف الصحي' : 'Healthy target growth (Normal)')
+              )}
+              <span className="truncate">{lang === 'ar' ? 'الناتج الحقيقي' : 'Real GDP'}</span>
+            </div>
             <ExplainerBubble itemKey="gdpReal" lang={lang} size="sm" />
           </div>
           <div className="text-lg font-bold font-mono text-white mt-1 tabular-nums">
             {currentState.macro.realGdp.toFixed(1)}{' '}
             <span className="text-[10px] text-slate-500">{t.units.billionUsd}</span>
           </div>
-          <div className="text-[10px] text-emerald-400 font-mono mt-1">
-            نمو: {currentState.macro.realGdpGrowthRate.toFixed(1)}%
+          <div className={`text-[10px] font-mono mt-1 ${growthRate >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+            {lang === 'ar' ? 'نمو' : 'Growth'}: {growthRate >= 0 ? `+${growthRate.toFixed(1)}%` : `${growthRate.toFixed(1)}%`}
           </div>
         </div>
 
+        {/* Inflation (CPI) */}
         <div
           onClick={() => onInspectMetric('inflationRate')}
-          className="bg-slate-900 border border-slate-800 rounded-lg p-3 hover:border-cyan-500/50 transition-colors cursor-pointer"
+          className="glass-card rounded-xl p-3.5 border border-slate-800/80 hover:border-cyan-500/40 hover:shadow-[0_4px_20px_rgba(6,182,212,0.12)] transition-all cursor-pointer group relative overflow-hidden"
         >
           <div className="flex items-center justify-between text-[11px] text-slate-400">
-            <span>التضخم السنوي (CPI)</span>
+            <div className="flex items-center gap-1.5 min-w-0">
+              {renderStatusDot(
+                inflationStatus,
+                inflationStatus === 'critical'
+                  ? (lang === 'ar' ? 'تضخم مرتفع فوق 7% (حرج)' : 'High inflation >7% (Critical)')
+                  : inflationStatus === 'warning'
+                  ? (lang === 'ar' ? 'تضخم أعلى من المستهدف (4-7%)' : 'Above target inflation 4-7% (Warning)')
+                  : (lang === 'ar' ? 'تضخم معتدل مستقر (<=4%)' : 'Moderate stable inflation <=4% (Normal)')
+              )}
+              <span className="truncate">{lang === 'ar' ? 'التضخم (CPI)' : 'Inflation (CPI)'}</span>
+            </div>
             <ExplainerBubble itemKey="inflationRate" lang={lang} size="sm" />
           </div>
-          <div className="text-lg font-bold font-mono text-white mt-1 tabular-nums">
+          <div className={`text-lg font-bold font-mono mt-1 tabular-nums ${
+            inflationStatus === 'critical' ? 'text-rose-400' : inflationStatus === 'warning' ? 'text-amber-400' : 'text-white'
+          }`}>
             {currentState.macro.inflationRate.toFixed(1)}%
           </div>
           <div className="text-[10px] text-slate-400 font-mono mt-1">
-            فائدة المركزي: {currentState.macro.centralBankRate.toFixed(1)}%
+            {lang === 'ar' ? 'فائدة المركزي' : 'CB Rate'}: {currentState.macro.centralBankRate.toFixed(1)}%
           </div>
         </div>
 
+        {/* Unemployment */}
         <div
           onClick={() => onInspectMetric('unemploymentRate')}
-          className="bg-slate-900 border border-slate-800 rounded-lg p-3 hover:border-cyan-500/50 transition-colors cursor-pointer"
+          className="glass-card rounded-xl p-3.5 border border-slate-800/80 hover:border-cyan-500/40 hover:shadow-[0_4px_20px_rgba(6,182,212,0.12)] transition-all cursor-pointer group relative overflow-hidden"
         >
           <div className="flex items-center justify-between text-[11px] text-slate-400">
-            <span>معدل البطالة</span>
+            <div className="flex items-center gap-1.5 min-w-0">
+              {renderStatusDot(
+                unemploymentStatus,
+                unemploymentStatus === 'critical'
+                  ? (lang === 'ar' ? 'بطالة مرتفعة تفوق 11% (حرج)' : 'High unemployment >11% (Critical)')
+                  : unemploymentStatus === 'warning'
+                  ? (lang === 'ar' ? 'بطالة أعلى من المعدل الطبيعي (7.5-11%)' : 'Elevated unemployment 7.5-11% (Warning)')
+                  : (lang === 'ar' ? 'سوق عمل منضبط (<=7.5%)' : 'Controlled labor market <=7.5% (Normal)')
+              )}
+              <span className="truncate">{lang === 'ar' ? 'معدل البطالة' : 'Unemployment'}</span>
+            </div>
             <ExplainerBubble itemKey="unemploymentRate" lang={lang} size="sm" />
           </div>
-          <div className="text-lg font-bold font-mono text-white mt-1 tabular-nums">
+          <div className={`text-lg font-bold font-mono mt-1 tabular-nums ${
+            unemploymentStatus === 'critical' ? 'text-rose-400' : unemploymentStatus === 'warning' ? 'text-amber-400' : 'text-white'
+          }`}>
             {currentState.demographics.unemploymentRate.toFixed(1)}%
           </div>
           <div className="text-[10px] text-slate-400 font-mono mt-1">
-            بطالة الشباب: {currentState.demographics.youthUnemploymentRate.toFixed(1)}%
+            {lang === 'ar' ? 'الشباب' : 'Youth'}: {currentState.demographics.youthUnemploymentRate.toFixed(1)}%
           </div>
         </div>
 
+        {/* Labor Productivity */}
         <div
           onClick={() => onInspectMetric('laborProductivityPerWorker')}
-          className="bg-slate-900 border border-slate-800 rounded-lg p-3 hover:border-cyan-500/50 transition-colors cursor-pointer"
+          className="glass-card rounded-xl p-3.5 border border-slate-800/80 hover:border-cyan-500/40 hover:shadow-[0_4px_20px_rgba(6,182,212,0.12)] transition-all cursor-pointer group relative overflow-hidden"
         >
           <div className="flex items-center justify-between text-[11px] text-slate-400">
-            <span>إنتاجية العامل</span>
+            <div className="flex items-center gap-1.5 min-w-0">
+              {renderStatusDot(
+                productivityStatus,
+                productivityStatus === 'critical'
+                  ? (lang === 'ar' ? 'إنتاجية وأجور منخفضة دون الحد (حرج)' : 'Depressed productivity/wages (Critical)')
+                  : productivityStatus === 'warning'
+                  ? (lang === 'ar' ? 'إنتاجية تتطلب تحفيزاً وتأهيلاً' : 'Sub-optimal productivity (Warning)')
+                  : (lang === 'ar' ? 'إنتاجية وأجور تنافسية مستقرة' : 'Competitive productivity (Normal)')
+              )}
+              <span className="truncate">{lang === 'ar' ? 'إنتاجية العامل' : 'Productivity'}</span>
+            </div>
             <ExplainerBubble itemKey="totalInvestment" lang={lang} size="sm" />
           </div>
           <div className="text-lg font-bold font-mono text-white mt-1 tabular-nums">
             {econ.laborProductivity.laborProductivityPerWorker.toFixed(1)}{' '}
-            <span className="text-[10px] text-slate-500">ألف $</span>
+            <span className="text-[10px] text-slate-500">{lang === 'ar' ? 'ألف $' : 'k$'}</span>
           </div>
           <div className="text-[10px] text-cyan-400 font-mono mt-1">
-            الأجر الحقيقي: ${econ.laborProductivity.averageRealWageMonthly.toFixed(0)}
+            {lang === 'ar' ? 'الأجر الحقيقي' : 'Real Wage'}: ${econ.laborProductivity.averageRealWageMonthly.toFixed(0)}
           </div>
         </div>
 
+        {/* Current Account */}
         <div
           onClick={() => onInspectMetric('currentAccountBalance')}
-          className="bg-slate-900 border border-slate-800 rounded-lg p-3 hover:border-cyan-500/50 transition-colors cursor-pointer"
+          className="glass-card rounded-xl p-3.5 border border-slate-800/80 hover:border-cyan-500/40 hover:shadow-[0_4px_20px_rgba(6,182,212,0.12)] transition-all cursor-pointer group relative overflow-hidden"
         >
           <div className="flex items-center justify-between text-[11px] text-slate-400">
-            <span>الحساب الجاري</span>
+            <div className="flex items-center gap-1.5 min-w-0">
+              {renderStatusDot(
+                caStatus,
+                caStatus === 'critical'
+                  ? (lang === 'ar' ? 'عجز حساب جاري جسيم يهدد الاحتياطي (حرج)' : 'Severe CA deficit (Critical)')
+                  : caStatus === 'warning'
+                  ? (lang === 'ar' ? 'عجز خارجي معتدل تحت المراقبة' : 'Moderate external deficit (Warning)')
+                  : (lang === 'ar' ? 'ميزان خارجي متوازن أو إيجابي' : 'Balanced external position (Normal)')
+              )}
+              <span className="truncate">{lang === 'ar' ? 'الحساب الجاري' : 'Current Account'}</span>
+            </div>
             <ExplainerBubble itemKey="foreignReservesMonths" lang={lang} size="sm" />
           </div>
           <div className={`text-lg font-bold font-mono mt-1 tabular-nums ${
-            econ.capacityTrade.currentAccountBalanceUsd >= 0 ? 'text-emerald-400' : 'text-rose-400'
+            econ.capacityTrade.currentAccountBalanceUsd >= 0 ? 'text-emerald-400' : caStatus === 'critical' ? 'text-rose-400' : 'text-amber-400'
           }`}>
-            {econ.capacityTrade.currentAccountBalanceUsd.toFixed(1)}{' '}
+            {econ.capacityTrade.currentAccountBalanceUsd >= 0 ? `+${econ.capacityTrade.currentAccountBalanceUsd.toFixed(1)}` : econ.capacityTrade.currentAccountBalanceUsd.toFixed(1)}{' '}
             <span className="text-[10px] text-slate-500">{t.units.billionUsd}</span>
           </div>
           <div className="text-[10px] text-slate-400 font-mono mt-1">
-            الاحتياطيات: ${currentState.macro.foreignReserves.toFixed(1)}B
+            {lang === 'ar' ? 'الاحتياطيات' : 'Reserves'}: ${currentState.macro.foreignReserves.toFixed(1)}B
           </div>
         </div>
 
+        {/* Output Gap */}
         <div
           onClick={() => onInspectMetric('outputGapPct')}
-          className="bg-slate-900 border border-slate-800 rounded-lg p-3 hover:border-cyan-500/50 transition-colors cursor-pointer"
+          className="glass-card rounded-xl p-3.5 border border-slate-800/80 hover:border-cyan-500/40 hover:shadow-[0_4px_20px_rgba(6,182,212,0.12)] transition-all cursor-pointer group relative overflow-hidden"
         >
           <div className="flex items-center justify-between text-[11px] text-slate-400">
-            <span>فجوة الناتج (Gap)</span>
+            <div className="flex items-center gap-1.5 min-w-0">
+              {renderStatusDot(
+                gapStatus,
+                gapStatus === 'critical'
+                  ? (lang === 'ar' ? 'فجوة ركود حادة أو إفراط تضخمي فائق (حرج)' : 'Extreme output gap (Critical)')
+                  : gapStatus === 'warning'
+                  ? (lang === 'ar' ? 'فجوة ناتج متوسطة دون الطاقة الكامنة' : 'Moderate output gap (Warning)')
+                  : (lang === 'ar' ? 'يعمل الاقتصاد قرب الناتج الكامن الطبيعي' : 'Operating near potential (Normal)')
+              )}
+              <span className="truncate">{lang === 'ar' ? 'فجوة الناتج (Gap)' : 'Output Gap'}</span>
+            </div>
             <ExplainerBubble itemKey="householdPurchasingPower" lang={lang} size="sm" />
           </div>
           <div className={`text-lg font-bold font-mono mt-1 tabular-nums ${
-            econ.nationalAccounts.outputGapPct >= 0 ? 'text-cyan-400' : 'text-amber-400'
+            gapStatus === 'critical' ? 'text-rose-400' : gapStatus === 'warning' ? 'text-amber-400' : 'text-cyan-400'
           }`}>
             {econ.nationalAccounts.outputGapPct > 0 ? `+${econ.nationalAccounts.outputGapPct.toFixed(1)}%` : `${econ.nationalAccounts.outputGapPct.toFixed(1)}%`}
           </div>
           <div className="text-[10px] text-slate-400 font-mono mt-1">
-            استغلال الطاقة: {econ.capacityTrade.capacityUtilizationPct.toFixed(1)}%
+            {lang === 'ar' ? 'استغلال الطاقة' : 'Capacity'}: {econ.capacityTrade.capacityUtilizationPct.toFixed(1)}%
           </div>
         </div>
       </div>
@@ -274,42 +388,42 @@ export const EconomicDashboard: React.FC<EconomicDashboardProps> = ({
       </div>
 
       {/* Income, Wages and Productivity Breakdown */}
-      <div className="bg-slate-900 border border-slate-800 rounded-lg p-5">
+      <div className="glass-panel rounded-2xl border border-slate-800/80 p-5 shadow-lg">
         <h3 className="text-sm font-semibold text-slate-100 mb-3 flex items-center gap-2">
           <Activity className="w-4 h-4 text-cyan-400" />
-          <span>توزيع الدخل والإنتاجية والقوة الشرائية للأسر</span>
+          <span>{lang === 'ar' ? 'توزيع الدخل والإنتاجية والقوة الشرائية للأسر' : 'Income Distribution, Productivity & Purchasing Power'}</span>
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
-          <div className="bg-slate-950 p-3 rounded border border-slate-800/80">
-            <span className="text-slate-400 block text-[11px]">الدخل المتاح الاسمي للأسر</span>
+          <div className="glass-card p-3 rounded-xl border border-slate-800/70 hover:border-slate-700/80 transition-all">
+            <span className="text-slate-400 block text-[11px] font-sans">{lang === 'ar' ? 'الدخل المتاح الاسمي للأسر' : 'Disposable Household Income'}</span>
             <span className="text-white font-bold text-base mt-1 block">
               ${econ.households.disposableIncomeNominal.toFixed(1)}B
             </span>
-            <span className="text-slate-500 text-[10px]">بعد استقطاع الضرائب المباشرة</span>
+            <span className="text-slate-500 text-[10px] font-sans">{lang === 'ar' ? 'بعد استقطاع الضرائب المباشرة' : 'Net of direct income taxes'}</span>
           </div>
 
-          <div className="bg-slate-950 p-3 rounded border border-slate-800/80">
-            <span className="text-slate-400 block text-[11px]">معدل الادخار العائلي</span>
+          <div className="glass-card p-3 rounded-xl border border-slate-800/70 hover:border-slate-700/80 transition-all">
+            <span className="text-slate-400 block text-[11px] font-sans">{lang === 'ar' ? 'معدل الادخار العائلي' : 'Household Savings Rate'}</span>
             <span className="text-cyan-400 font-bold text-base mt-1 block">
               {econ.households.householdSavingsRatePct.toFixed(1)}%
             </span>
-            <span className="text-slate-500 text-[10px]">المدخرات: ${econ.households.householdSavingsNominal.toFixed(1)}B</span>
+            <span className="text-slate-500 text-[10px] font-sans">{lang === 'ar' ? `المدخرات: $${econ.households.householdSavingsNominal.toFixed(1)}B` : `Savings: $${econ.households.householdSavingsNominal.toFixed(1)}B`}</span>
           </div>
 
-          <div className="bg-slate-950 p-3 rounded border border-slate-800/80">
-            <span className="text-slate-400 block text-[11px]">مؤشر القوة الشرائية الحقيقية</span>
+          <div className="glass-card p-3 rounded-xl border border-slate-800/70 hover:border-slate-700/80 transition-all">
+            <span className="text-slate-400 block text-[11px] font-sans">{lang === 'ar' ? 'مؤشر القوة الشرائية الحقيقية' : 'Real Purchasing Power Index'}</span>
             <span className="text-white font-bold text-base mt-1 block">
               {econ.households.purchasingPowerIndex.toFixed(1)}
             </span>
-            <span className="text-slate-500 text-[10px]">سنة الأساس = 100</span>
+            <span className="text-slate-500 text-[10px] font-sans">{lang === 'ar' ? 'سنة الأساس = 100' : 'Baseline year = 100'}</span>
           </div>
 
-          <div className="bg-slate-950 p-3 rounded border border-slate-800/80">
-            <span className="text-slate-400 block text-[11px]">حصة العمل من الناتج (Labor Share)</span>
+          <div className="glass-card p-3 rounded-xl border border-slate-800/70 hover:border-slate-700/80 transition-all">
+            <span className="text-slate-400 block text-[11px] font-sans">{lang === 'ar' ? 'حصة العمل من الناتج' : 'Labor Share of GDP'}</span>
             <span className="text-emerald-400 font-bold text-base mt-1 block">
               {econ.laborProductivity.laborShareOfGdpPct.toFixed(1)}%
             </span>
-            <span className="text-slate-500 text-[10px]">إجمالي الأجور / الناتج الاسمي</span>
+            <span className="text-slate-500 text-[10px] font-sans">{lang === 'ar' ? 'إجمالي الأجور / الناتج الاسمي' : 'Total compensation / Nominal GDP'}</span>
           </div>
         </div>
       </div>

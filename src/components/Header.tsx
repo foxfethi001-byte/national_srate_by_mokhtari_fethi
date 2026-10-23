@@ -93,35 +93,36 @@ export const Header: React.FC<HeaderProps> = ({
   const isSecondaryActive = secondaryTools.some((st) => st.id === currentTab);
 
   return (
-    <header className="border-b border-slate-800 bg-slate-900/95 backdrop-blur sticky top-0 z-40">
+    <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-900/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-lg shadow-black/20 relative before:absolute before:inset-x-0 before:bottom-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-cyan-500/35 before:to-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
         {/* Zone 1: Brand Wordmark */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-cyan-600/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 font-bold font-mono text-sm shadow-inner">
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/25 via-blue-600/15 to-transparent border border-cyan-400/40 flex items-center justify-center text-cyan-300 font-bold font-mono text-sm shadow-[0_0_16px_rgba(6,182,212,0.2)]">
             NS
           </div>
           <div>
-            <div className="text-base sm:text-lg font-bold text-white tracking-tight leading-none whitespace-nowrap">
-              {t.appTitle}
+            <div className="text-base sm:text-lg font-bold text-white tracking-tight leading-none whitespace-nowrap flex items-center gap-2">
+              <span>{t.appTitle}</span>
+              <span className="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]"></span>
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5 hidden sm:block">
+            <div className="text-[10px] text-slate-400 mt-1 hidden sm:block tracking-wide">
               {t.appSubtitle}
             </div>
           </div>
         </div>
 
         {/* Zone 2: Navigation Links (Scrollable or multi-device) */}
-        <nav className="hidden xl:flex items-center gap-1 text-xs font-medium text-slate-400 overflow-x-auto py-1">
+        <nav className="hidden xl:flex items-center gap-1.5 text-xs font-medium text-slate-400 overflow-x-auto py-1">
           {coreViews.map((view) => {
             const isActive = currentTab === view.id;
             return (
               <button
                 key={view.id}
                 onClick={() => onTabChange(view.id)}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md transition-colors cursor-pointer whitespace-nowrap ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-150 cursor-pointer whitespace-nowrap ${
                   isActive
-                    ? 'bg-cyan-500/15 text-cyan-300 font-semibold border border-cyan-500/30 shadow-sm'
-                    : 'hover:text-slate-200 hover:bg-slate-800/60'
+                    ? 'bg-cyan-500/20 text-cyan-300 font-semibold border border-cyan-400/40 shadow-[0_0_14px_rgba(6,182,212,0.2)] backdrop-blur-md'
+                    : 'text-slate-400 hover:text-slate-100 hover:bg-white/[0.05] border border-transparent hover:border-white/[0.08]'
                 }`}
               >
                 {view.icon}
@@ -134,15 +135,15 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative">
             <button
               onClick={() => setToolsOpen(!toolsOpen)}
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md transition-colors cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-150 cursor-pointer whitespace-nowrap ${
                 isSecondaryActive
-                  ? 'bg-cyan-500/15 text-cyan-300 font-semibold border border-cyan-500/30'
-                  : 'hover:text-slate-200 hover:bg-slate-800/60'
+                  ? 'bg-cyan-500/20 text-cyan-300 font-semibold border border-cyan-400/40 shadow-[0_0_14px_rgba(6,182,212,0.2)]'
+                  : 'text-slate-400 hover:text-slate-100 hover:bg-white/[0.05] border border-transparent hover:border-white/[0.08]'
               }`}
             >
               <Wrench className="w-3.5 h-3.5" />
               <span>{lang === 'ar' ? 'أدوات متقدمة' : 'Tools'}</span>
-              <ChevronDown className="w-3 h-3" />
+              <ChevronDown className="w-3 h-3 opacity-70" />
             </button>
 
             {toolsOpen && (
@@ -254,15 +255,15 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Sub-bar for medium & small viewports to access all 10 core views easily */}
-      <div className="xl:hidden flex items-center gap-1 px-4 py-2 bg-slate-900 border-t border-slate-800/80 overflow-x-auto text-xs text-slate-400">
+      <div className="xl:hidden flex items-center gap-1.5 px-4 py-2.5 bg-slate-900/80 dark:bg-slate-950/80 backdrop-blur-xl border-t border-slate-800/80 overflow-x-auto text-xs text-slate-400">
         {coreViews.map((view) => (
           <button
             key={view.id}
             onClick={() => onTabChange(view.id)}
-            className={`whitespace-nowrap px-2.5 py-1 rounded transition-colors flex items-center gap-1 cursor-pointer ${
+            className={`whitespace-nowrap px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
               currentTab === view.id
-                ? 'bg-cyan-500/15 text-cyan-400 font-semibold'
-                : 'hover:text-slate-200'
+                ? 'bg-cyan-500/20 text-cyan-300 font-semibold border border-cyan-400/35 shadow-sm'
+                : 'hover:text-slate-200 hover:bg-white/[0.04]'
             }`}
           >
             {view.icon}

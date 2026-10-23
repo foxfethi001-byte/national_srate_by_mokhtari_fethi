@@ -52,13 +52,13 @@ export const TimeControls: React.FC<TimeControlsProps> = ({
   const progressPct = Math.min(100, Math.max(0, (elapsedYears / (maxHorizonYear - startYear)) * 100));
 
   return (
-    <div className="bg-slate-900 border-b border-slate-800 px-4 sm:px-6 py-3">
+    <div className="bg-slate-900/75 dark:bg-slate-950/75 backdrop-blur-xl border-b border-slate-800/80 px-4 sm:px-6 py-3 shadow-sm relative before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-white/[0.08] before:to-transparent">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Scenario and Simulated Date Status */}
         <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400">{t.scenarioActive}</span>
-            <span className="text-xs font-semibold text-cyan-400 bg-cyan-950/60 border border-cyan-800/60 px-2 py-0.5 rounded">
+            <span className="text-xs text-slate-400 font-medium">{t.scenarioActive}</span>
+            <span className="text-xs font-semibold text-cyan-300 bg-cyan-500/10 border border-cyan-400/30 px-2.5 py-1 rounded-lg backdrop-blur-md shadow-[0_0_12px_rgba(6,182,212,0.12)]">
               {scenarioName}
             </span>
           </div>
@@ -68,18 +68,18 @@ export const TimeControls: React.FC<TimeControlsProps> = ({
             <span className="text-2xl font-bold font-mono text-white tabular-nums tracking-tight">
               {TimeEngine.formatDate(currentDate, lang)}
             </span>
-            <span className="text-xs text-slate-500 font-mono">
+            <span className="text-xs text-slate-400 font-mono font-medium">
               (+{elapsedYears} {t.units.years})
             </span>
           </div>
 
           {/* Time Step Mode Toggle */}
-          <div className="hidden sm:flex items-center gap-1 bg-slate-800 border border-slate-700 rounded p-0.5 text-[11px] font-mono">
+          <div className="hidden sm:flex items-center gap-1 bg-slate-800/80 backdrop-blur-md border border-white/[0.08] rounded-lg p-0.5 text-[11px] font-mono">
             <button
               onClick={() => onToggleTimeStep('annual')}
-              className={`px-2 py-0.5 rounded cursor-pointer ${
+              className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
                 timeStep === 'annual'
-                  ? 'bg-cyan-500/20 text-cyan-300 font-bold'
+                  ? 'bg-cyan-500/25 text-cyan-300 font-bold border border-cyan-400/30 shadow-xs'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -87,9 +87,9 @@ export const TimeControls: React.FC<TimeControlsProps> = ({
             </button>
             <button
               onClick={() => onToggleTimeStep('quarterly')}
-              className={`px-2 py-0.5 rounded cursor-pointer ${
+              className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
                 timeStep === 'quarterly'
-                  ? 'bg-cyan-500/20 text-cyan-300 font-bold'
+                  ? 'bg-cyan-500/25 text-cyan-300 font-bold border border-cyan-400/30 shadow-xs'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >

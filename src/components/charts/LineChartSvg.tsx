@@ -98,7 +98,7 @@ export const LineChartSvg: React.FC<LineChartSvgProps> = ({
   });
 
   return (
-    <div className="relative w-full bg-slate-900 border border-slate-800 rounded-lg p-4">
+    <div className="relative w-full glass-panel rounded-xl border border-slate-800/80 p-4 sm:p-5 shadow-md">
       {(title || subtitle) && (
         <div className="mb-3 pb-2 border-b border-slate-800/80">
           {title && <h3 className="text-sm font-semibold text-slate-100">{title}</h3>}

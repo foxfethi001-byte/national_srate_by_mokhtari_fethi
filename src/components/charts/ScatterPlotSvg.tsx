@@ -44,7 +44,7 @@ export const ScatterPlotSvg: React.FC<ScatterPlotSvgProps> = ({
 
   if (!points || points.length === 0) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 flex items-center justify-center text-slate-500 text-xs font-mono h-48">
+      <div className="glass-panel rounded-xl border border-slate-800/80 p-5 flex items-center justify-center text-slate-500 text-xs font-mono h-48 shadow-md">
         بيانات غير كافية لرسم مخطط الانتشار
       </div>
     );
@@ -86,7 +86,7 @@ export const ScatterPlotSvg: React.FC<ScatterPlotSvgProps> = ({
   const yTicks = [domainMinY, (domainMinY + domainMaxY) / 2, domainMaxY];
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 sm:p-5 flex flex-col justify-between">
+    <div className="glass-panel rounded-xl border border-slate-800/80 p-4 sm:p-5 flex flex-col justify-between shadow-md">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-800 gap-2">
         <div>

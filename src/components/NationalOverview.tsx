@@ -24,6 +24,7 @@ import {
   Info,
 } from 'lucide-react';
 import { ExplainerBubble } from './common/ExplainerBubble';
+import { MetricCard } from './MetricCard';
 
 export interface StrategicIndicator {
   key: string;
@@ -238,8 +239,119 @@ export const NationalOverview: React.FC<NationalOverviewProps> = ({
         </div>
       </div>
 
+      {/* Top Glassmorphic KPI Cards Grid with Visual State Indicator Dots */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <MetricCard
+          label={lang === 'ar' ? 'الناتج الحقيقي' : 'Real GDP'}
+          value={currentState.macro.realGdp}
+          unit={t.units.billionUsd}
+          previousValue={previousState?.macro.realGdp}
+          baselineValue={baselineState.macro.realGdp}
+          decimals={1}
+          status={currentState.macro.realGdpGrowthRate < 0 ? 'critical' : currentState.macro.realGdpGrowthRate < 1.5 ? 'warning' : 'normal'}
+          statusTooltip={
+            currentState.macro.realGdpGrowthRate < 0
+              ? (lang === 'ar' ? 'حرج: انكماش الناتج الحقيقي' : 'Critical: Output Contraction')
+              : currentState.macro.realGdpGrowthRate < 1.5
+              ? (lang === 'ar' ? 'تحذير: تباطؤ النمو دون المتوقع' : 'Warning: Below Target Growth')
+              : (lang === 'ar' ? 'ضمن النطاق الآمن المستهدف' : 'Within Expected Threshold')
+          }
+          onClickInspect={() => onInspectMetric('realGdp')}
+        />
+        <MetricCard
+          label={lang === 'ar' ? 'التضخم (CPI)' : 'Inflation (CPI)'}
+          value={currentState.macro.inflationRate}
+          unit="%"
+          previousValue={previousState?.macro.inflationRate}
+          baselineValue={baselineState.macro.inflationRate}
+          decimals={1}
+          invertColor={true}
+          status={currentState.macro.inflationRate > 7 ? 'critical' : currentState.macro.inflationRate > 4 ? 'warning' : 'normal'}
+          statusTooltip={
+            currentState.macro.inflationRate > 7
+              ? (lang === 'ar' ? 'حرج: تسارع تضخمي مرتفع' : 'Critical: High Inflation Surge')
+              : currentState.macro.inflationRate > 4
+              ? (lang === 'ar' ? 'تحذير: يقترب من حد الاستقرار' : 'Warning: Approaching Inflation Threshold')
+              : (lang === 'ar' ? 'ضمن النطاق الآمن المستهدف' : 'Within Expected Threshold')
+          }
+          onClickInspect={() => onInspectMetric('inflationRate')}
+        />
+        <MetricCard
+          label={lang === 'ar' ? 'معدل البطالة' : 'Unemployment'}
+          value={currentState.demographics.unemploymentRate}
+          unit="%"
+          previousValue={previousState?.demographics.unemploymentRate}
+          baselineValue={baselineState.demographics.unemploymentRate}
+          decimals={1}
+          invertColor={true}
+          status={currentState.demographics.unemploymentRate > 11 ? 'critical' : currentState.demographics.unemploymentRate > 7.5 ? 'warning' : 'normal'}
+          statusTooltip={
+            currentState.demographics.unemploymentRate > 11
+              ? (lang === 'ar' ? 'حرج: بطالة مرتفعة تفوق الحدود' : 'Critical: Severe Unemployment')
+              : currentState.demographics.unemploymentRate > 7.5
+              ? (lang === 'ar' ? 'تحذير: ضغوط في سوق العمل' : 'Warning: Labor Market Slack')
+              : (lang === 'ar' ? 'ضمن النطاق الآمن المستهدف' : 'Within Expected Threshold')
+          }
+          onClickInspect={() => onInspectMetric('unemploymentRate')}
+        />
+        <MetricCard
+          label={lang === 'ar' ? 'عجز الميزانية' : 'Budget Deficit'}
+          value={currentState.macro.overallDeficit}
+          unit={t.units.billionUsd}
+          previousValue={previousState?.macro.overallDeficit}
+          baselineValue={baselineState.macro.overallDeficit}
+          decimals={1}
+          invertColor={true}
+          status={(currentState.macro.overallDeficit / currentState.macro.nominalGdp) * 100 > 6 ? 'critical' : (currentState.macro.overallDeficit / currentState.macro.nominalGdp) * 100 > 3 ? 'warning' : 'normal'}
+          statusTooltip={
+            (currentState.macro.overallDeficit / currentState.macro.nominalGdp) * 100 > 6
+              ? (lang === 'ar' ? 'حرج: عجز مالي بنيوي يتجاوز 6% من الناتج' : 'Critical: Severe Deficit > 6% GDP')
+              : (currentState.macro.overallDeficit / currentState.macro.nominalGdp) * 100 > 3
+              ? (lang === 'ar' ? 'تحذير: عجز يتجاوز عتبة الـ 3%' : 'Warning: Deficit Exceeds 3% GDP')
+              : (lang === 'ar' ? 'ضمن النطاق الآمن المستهدف' : 'Within Expected Threshold')
+          }
+          onClickInspect={() => onInspectMetric('overallDeficit')}
+        />
+        <MetricCard
+          label={lang === 'ar' ? 'نسبة الدين العام' : 'Debt-to-GDP'}
+          value={currentState.macro.debtToGdpRatio}
+          unit="%"
+          previousValue={previousState?.macro.debtToGdpRatio}
+          baselineValue={baselineState.macro.debtToGdpRatio}
+          decimals={1}
+          invertColor={true}
+          status={currentState.macro.debtToGdpRatio > 80 ? 'critical' : currentState.macro.debtToGdpRatio > 60 ? 'warning' : 'normal'}
+          statusTooltip={
+            currentState.macro.debtToGdpRatio > 80
+              ? (lang === 'ar' ? 'حرج: ضغط استدامة الديون السيادية > 80%' : 'Critical: Debt Overhang > 80% GDP')
+              : currentState.macro.debtToGdpRatio > 60
+              ? (lang === 'ar' ? 'تحذير: تجاوز عتبة ماستريخت (60%)' : 'Warning: Exceeds 60% Maastricht Benchmark')
+              : (lang === 'ar' ? 'ضمن النطاق الآمن المستهدف' : 'Within Expected Threshold')
+          }
+          onClickInspect={() => onInspectMetric('debtToGdpRatio')}
+        />
+        <MetricCard
+          label={lang === 'ar' ? 'الاحتقان الاجتماعي' : 'Social Tension'}
+          value={currentState.governance.socialTensionIndex}
+          unit="نقطة"
+          previousValue={previousState?.governance.socialTensionIndex}
+          baselineValue={baselineState.governance.socialTensionIndex}
+          decimals={1}
+          invertColor={true}
+          status={currentState.governance.socialTensionIndex > 65 ? 'critical' : currentState.governance.socialTensionIndex > 45 ? 'warning' : 'normal'}
+          statusTooltip={
+            currentState.governance.socialTensionIndex > 65
+              ? (lang === 'ar' ? 'حرج: توتر اجتماعي مرتفع' : 'Critical: High Social Tension')
+              : currentState.governance.socialTensionIndex > 45
+              ? (lang === 'ar' ? 'تحذير: تصاعد مؤشرات الاحتقان' : 'Warning: Rising Social Friction')
+              : (lang === 'ar' ? 'ضمن النطاق الآمن المستهدف' : 'Within Expected Threshold')
+          }
+          onClickInspect={() => onInspectMetric('socialTensionIndex')}
+        />
+      </div>
+
       {/* Strategic Scorecard Header & Target Editor Toggle */}
-      <div className="bg-slate-900 border border-slate-800 rounded-lg p-5">
+      <div className="glass-panel rounded-2xl border border-slate-800/80 p-5 shadow-lg">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
           <div>
             <h2 className="text-base font-semibold text-slate-100 flex items-center gap-2">
@@ -366,7 +478,31 @@ export const NationalOverview: React.FC<NationalOverviewProps> = ({
                     onClick={() => onInspectMetric(ind.key)}
                     className="hover:bg-slate-800/40 transition-colors cursor-pointer group"
                   >
-                    <td className="py-3 px-3 font-sans font-medium text-slate-200 flex items-center gap-1.5">
+                    <td className="py-3 px-3 font-sans font-medium text-slate-200 flex items-center gap-2">
+                      <span
+                        className="relative flex h-2 w-2 flex-shrink-0"
+                        title={
+                          ind.warningStatus === 'critical'
+                            ? (lang === 'ar' ? 'تجاوز حد الخطر الحرج' : 'Critical threshold breached')
+                            : ind.warningStatus === 'warning'
+                            ? (lang === 'ar' ? 'يقترب من حد التنبيه' : 'Approaching warning threshold')
+                            : (lang === 'ar' ? 'ضمن النطاق المستهدف والمستقر' : 'Within target stable threshold')
+                        }
+                      >
+                        {ind.warningStatus === 'critical' ? (
+                          <>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.7)]"></span>
+                          </>
+                        ) : ind.warningStatus === 'warning' ? (
+                          <>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-60"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]"></span>
+                          </>
+                        ) : (
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]"></span>
+                        )}
+                      </span>
                       <ExplainerBubble itemKey={ind.key} lang={lang} size="sm" />
                       <span>{lang === 'ar' ? ind.labelAr : ind.labelEn}</span>
                       <ArrowUpRight className="w-3 h-3 text-slate-600 group-hover:text-cyan-400 transition-colors" />
@@ -430,19 +566,28 @@ export const NationalOverview: React.FC<NationalOverviewProps> = ({
                     </td>
                     <td className="py-3 px-3 text-center">
                       {ind.warningStatus === 'critical' ? (
-                        <span className="inline-flex items-center gap-1 text-rose-400 bg-rose-950/60 border border-rose-800/60 px-2 py-0.5 rounded text-[10px] font-semibold">
-                          <ShieldAlert className="w-3 h-3" />
-                          <span>حرج</span>
+                        <span className="inline-flex items-center gap-1.5 text-rose-300 bg-rose-950/60 border border-rose-800/60 px-2 py-0.5 rounded-md text-[10px] font-semibold backdrop-blur-sm">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-400"></span>
+                          </span>
+                          <ShieldAlert className="w-3 h-3 text-rose-400" />
+                          <span>{lang === 'ar' ? 'حرج' : 'Critical'}</span>
                         </span>
                       ) : ind.warningStatus === 'warning' ? (
-                        <span className="inline-flex items-center gap-1 text-amber-400 bg-amber-950/60 border border-amber-800/60 px-2 py-0.5 rounded text-[10px] font-semibold">
-                          <AlertTriangle className="w-3 h-3" />
-                          <span>تنبيه</span>
+                        <span className="inline-flex items-center gap-1.5 text-amber-300 bg-amber-950/60 border border-amber-800/60 px-2 py-0.5 rounded-md text-[10px] font-semibold backdrop-blur-sm">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-60"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-400"></span>
+                          </span>
+                          <AlertTriangle className="w-3 h-3 text-amber-400" />
+                          <span>{lang === 'ar' ? 'تنبيه' : 'Warning'}</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded text-[10px]">
-                          <CheckCircle className="w-3 h-3" />
-                          <span>مستقر</span>
+                        <span className="inline-flex items-center gap-1.5 text-emerald-300 bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded-md text-[10px] backdrop-blur-sm">
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400 shadow-[0_0_4px_rgba(52,211,153,0.6)]"></span>
+                          <CheckCircle className="w-3 h-3 text-emerald-400" />
+                          <span>{lang === 'ar' ? 'مستقر' : 'Stable'}</span>
                         </span>
                       )}
                     </td>

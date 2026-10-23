@@ -46,7 +46,7 @@ export const BarChartSvg: React.FC<BarChartSvgProps> = ({
 
   if (!items || items.length === 0) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 flex items-center justify-center text-slate-500 text-xs font-mono h-48">
+      <div className="glass-panel rounded-xl border border-slate-800/80 p-5 flex items-center justify-center text-slate-500 text-xs font-mono h-48 shadow-md">
         لا توجد بيانات متاحة للعرض
       </div>
     );
@@ -61,7 +61,7 @@ export const BarChartSvg: React.FC<BarChartSvgProps> = ({
   const maxValue = Math.max(...allValues, 1);
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 sm:p-5 flex flex-col justify-between">
+    <div className="glass-panel rounded-xl border border-slate-800/80 p-4 sm:p-5 flex flex-col justify-between shadow-md">
       {/* Title & Legends */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-800 gap-2">
         <div>
