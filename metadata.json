@@ -1,0 +1,6 @@
+{
+  "name": "محاكي الدولة الوطنية | National State Simulator",
+  "description": "محاكي تفاعلي علمي متقدم للأنظمة الوطنية، السياسات العامة، الاقتصاد الكلي، والترابطات القطاعية المعقدة.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
